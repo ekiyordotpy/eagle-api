@@ -18,6 +18,5 @@ Spins up an isolated Postgres, runs pytest, then tears everything down:
 ```bash
 docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
 ```
-
 Exit code mirrors pytest (0 = all passed).
 
