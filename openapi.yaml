@@ -11,7 +11,48 @@ tags:
     description: Manage transactions on a bank account
   - name: user
     description: Manage a user
+  - name: auth
+    description: Authenticate a user
 paths:
+  /v1/auth/login:
+    post:
+      tags:
+        - auth
+      description: Authenticate a user and return a JWT bearer token.
+      operationId: loginUser
+      requestBody:
+        description: User credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /v1/accounts:
     post:
       tags:
@@ -897,6 +938,30 @@ components:
         updatedTimestamp:
           type: string
           format: 'date-time'
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          enum:
+            - "bearer"
     ErrorResponse:
       type: object
       required:

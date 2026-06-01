@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
+from app.exceptions import register_exception_handlers
+from app.routers import auth as auth_router
 
 
 @asynccontextmanager
@@ -30,6 +32,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    register_exception_handlers(app)
+
+    app.include_router(auth_router.router)
 
     return app
 
