@@ -126,3 +126,62 @@ Expected: **204** (empty body).
 | Any protected endpoint without authorising | **403** (Swagger sends no header if not authorised) |
 | `GET /v1/users/{userId}` with someone else's `userId` | **403** `You do not have permission to access this user` |
 
+---
+
+## Accounts (`/v1/accounts`)
+
+All accounts endpoints require the bearer token from the login step. Ensure Swagger is authorised first.
+
+### 8. Create an account — `POST /v1/accounts`
+
+```json
+{
+  "name": "My Current Account",
+  "accountType": "personal"
+}
+```
+
+Expected: **201** with the account object. Copy the `accountNumber` (e.g. `01123456`).
+
+### 9. List accounts — `GET /v1/accounts`
+
+No body. Expected: **200**
+
+```json
+{
+  "accounts": [
+    { "accountNumber": "01123456", "sortCode": "10-10-10", "balance": "0.00", ... }
+  ]
+}
+```
+
+### 10. Get account — `GET /v1/accounts/{accountNumber}`
+
+Set `accountNumber` to the value from step 8.
+
+Expected: **200** with the account object.
+
+### 11. Update account — `PATCH /v1/accounts/{accountNumber}`
+
+```json
+{
+  "name": "My Renamed Account"
+}
+```
+
+Expected: **200** with updated `name`.
+
+### 12. Delete account — `DELETE /v1/accounts/{accountNumber}`
+
+Expected: **204** (empty body).
+
+> Note: deletion is blocked with **409** if the account has transactions. Delete transactions first or use a fresh account.
+
+### Accounts error cases
+
+| Action | Expected |
+|---|---|
+| `GET /v1/accounts/{accountNumber}` for another user's account | **403** |
+| `GET /v1/accounts/00000000` (non-existent) | **404** `Account not found` |
+| `DELETE` an account that has transactions | **409** |
+
