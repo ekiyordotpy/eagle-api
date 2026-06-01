@@ -185,3 +185,63 @@ Expected: **204** (empty body).
 | `GET /v1/accounts/00000000` (non-existent) | **404** `Account not found` |
 | `DELETE` an account that has transactions | **409** |
 
+---
+
+## Transactions (`/v1/accounts/{accountNumber}/transactions`)
+
+All transaction endpoints require the bearer token. Ensure Swagger is authorised and you have an `accountNumber` from step 8.
+
+### 13. Deposit — `POST /v1/accounts/{accountNumber}/transactions`
+
+Set `accountNumber` in the path. Body:
+
+```json
+{
+  "amount": 500.00,
+  "currency": "GBP",
+  "type": "deposit",
+  "reference": "Initial deposit"
+}
+```
+
+Expected: **201** with the transaction object. The account `balance` is now `500.00`.
+
+### 14. Withdrawal — `POST /v1/accounts/{accountNumber}/transactions`
+
+```json
+{
+  "amount": 100.00,
+  "currency": "GBP",
+  "type": "withdrawal",
+  "reference": "Coffee"
+}
+```
+
+Expected: **201**. Balance is now `400.00`.
+
+### 15. List transactions — `GET /v1/accounts/{accountNumber}/transactions`
+
+No body. Expected: **200**
+
+```json
+{
+  "transactions": [ { "id": "tan-...", "type": "deposit", ... }, { "id": "tan-...", "type": "withdrawal", ... } ]
+}
+```
+
+### 16. Get single transaction — `GET /v1/accounts/{accountNumber}/transactions/{transactionId}`
+
+Set `transactionId` to an `id` from step 15.
+
+Expected: **200** with the transaction object.
+
+### Transactions error cases
+
+| Action | Expected |
+|---|---|
+| Withdraw more than the current balance | **422** `Insufficient funds to process transaction` |
+| Deposit that would push balance above 10000.00 | **422** `Transaction would exceed maximum account balance` |
+| `POST` to another user's account | **403** |
+| `GET` transaction on a non-existent account | **404** `Account not found` |
+| `GET` a `transactionId` that doesn't exist on that account | **404** `Transaction not found` |
+

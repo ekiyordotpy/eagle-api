@@ -7,6 +7,7 @@ from app.database import Base, engine
 from app.exceptions import register_exception_handlers
 from app.routers import accounts as accounts_router
 from app.routers import auth as auth_router
+from app.routers import transactions as transactions_router
 from app.routers import users as users_router
 
 
@@ -40,6 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router.router)
     app.include_router(users_router.router)
     app.include_router(accounts_router.router)
+    app.include_router(transactions_router.router)
 
     return app
 
